@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đề thi kết thúc học phần</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#243047;line-height:1.6}
+header{background:#173b68;color:white;padding:28px 6%;text-align:center}
+nav{background:#102b4d;padding:13px 6%;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-weight:bold}nav a:hover{text-decoration:underline}
+main{max-width:1100px;margin:28px auto;padding:0 18px}.section{background:white;padding:24px;border-radius:12px;margin-bottom:24px;box-shadow:0 3px 14px #173b6812}
+h2{color:#174b80;margin-top:0}.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.product{border:1px solid #dce5ef;border-radius:10px;padding:16px;background:#fff}.price{color:#087b55;font-weight:bold}
+input[type=text],input[type=email],input[type=password]{width:100%;padding:11px;border:1px solid #bdc9d8;border-radius:7px;margin:7px 0 13px;font-size:16px}
+button{background:#1763a6;color:white;border:0;border-radius:7px;padding:11px 17px;cursor:pointer;font-size:15px}
+button:hover{background:#104a80}.message{margin-top:12px;font-weight:bold}.error{color:#b42318}.success{color:#087b55}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{min-width:0}.timer{font-size:48px;font-weight:bold;text-align:center;letter-spacing:3px;margin:15px}
+.timer.warning{color:#c0392b;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.45}}
+.modal{display:none;position:fixed;inset:0;background:#0009;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:white;border-radius:12px;padding:28px;max-width:380px;text-align:center}
+footer{text-align:center;color:#607086;padding:22px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}header{padding:22px 15px}.timer{font-size:38px}}
+</style>
+</head>
+<body>
+<header><h1>ĐỀ THI KẾT THÚC HỌC PHẦN</h1><p>Thực hành HTML – CSS – JavaScript</p></header>
+<nav>
+<a href="index.html">Trang chủ</a>
+<a href="ly-thuyet.html">Trả lời lý thuyết</a>
+<a href="diem-danh.html">Thông tin điểm danh</a>
+</nav>
+<main>
+<section class="section">
+<h2>Bài 1. Danh sách và tìm kiếm sản phẩm</h2>
+<label for="search">Nhập tên sản phẩm cần tìm:</label>
+<input id="search" type="text" placeholder="Ví dụ: laptop">
+<div id="productList" class="products"></div>
+<p id="searchMessage" class="message" aria-live="polite"></p>
+</section>
+
+<section class="section">
+<h2>Bài 2. Form đăng ký người dùng</h2>
+<form id="registerForm">
+<div class="form-grid">
+<div class="field"><label for="name">Họ và tên</label><input id="name" type="text" required maxlength="80"></div>
+<div class="field"><label for="email">Email</label><input id="email" type="email" required></div>
+<div class="field"><label for="password">Mật khẩu</label><input id="password" type="password" required autocomplete="new-password"></div>
+</div>
+<label><input id="terms" type="checkbox"> Tôi đồng ý với điều khoản</label><br><br>
+<button type="submit">Đăng ký</button>
+<p id="registerMessage" class="message" aria-live="polite"></p>
+</form>
+<p><small>Lưu ý: Bản demo chỉ lưu họ tên và email. Không lưu mật khẩu dạng văn bản trong LocalStorage vì dữ liệu này có thể bị đọc bởi mã chạy trên cùng trang.</small></p>
+</section>
+
+<section class="section">
+<h2>Bài 3. Đồng hồ đếm ngược 10 phút</h2>
+<div id="timer" class="timer" aria-live="polite">10:00</div>
+<div style="text-align:center">
+<button id="startTimer">Bắt đầu</button>
+<button id="pauseTimer">Tạm dừng</button>
+<button id="resetTimer">Đặt lại</button>
+</div>
+</section>
+</main>
+<div id="timeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<div class="modal-box"><h2 id="modalTitle">Đã hết thời gian!</h2><p>Thời gian đếm ngược đã kết thúc.</p><button id="closeModal">Đóng</button></div>
+</div>
+<footer>Đề thi kết thúc học phần – HTML, CSS và JavaScript</footer>
+<script>
+// Bài 1: Dữ liệu sản phẩm được lưu trong mảng JavaScript.
+const products = [
+ {name:"Laptop", price:15000000, description:"Máy tính xách tay"},
+ {name:"Điện thoại", price:8500000, description:"Điện thoại thông minh"},
+ {name:"Tai nghe", price:650000, description:"Tai nghe không dây"},
+ {name:"Bàn phím", price:450000, description:"Bàn phím máy tính"},
+ {name:"Chuột", price:250000, description:"Chuột không dây"}
+];
+const productList = document.getElementById("productList");
+const searchInput = document.getElementById("search");
+const searchMessage = document.getElementById("searchMessage");
+
+function renderProducts(keyword = "") {
+  // Chuẩn hóa chuỗi để tìm kiếm không phân biệt chữ hoa/chữ thường.
+  const normalized = keyword.trim().toLocaleLowerCase("vi");
+  const filtered = products.filter(p => p.name.toLocaleLowerCase("vi").includes(normalized));
+  productList.replaceChildren(); // Xóa kết quả cũ trước khi vẽ lại.
+  filtered.forEach(p => {
+    const card = document.createElement("article");
+    card.className = "product";
+    const title = document.createElement("h3");
+    title.textContent = p.name; // textContent tránh diễn giải dữ liệu thành HTML.
+    const description = document.createElement("p");
+    description.textContent = p.description;
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = p.price.toLocaleString("vi-VN") + " VNĐ";
+    card.append(title, description, price);
+    productList.append(card);
+  });
+  searchMessage.textContent = filtered.length ? `Tìm thấy ${filtered.length} sản phẩm.` : "Không tìm thấy sản phẩm phù hợp.";
+  searchMessage.className = filtered.length ? "message success" : "message error";
+}
+searchInput.addEventListener("input", e => renderProducts(e.target.value));
+renderProducts();
+
+// Bài 2: Kiểm tra dữ liệu ở phía trình duyệt trước khi lưu.
+const registerForm = document.getElementById("registerForm");
+registerForm.addEventListener("submit", event => {
+  event.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const accepted = document.getElementById("terms").checked;
+  const message = document.getElementById("registerMessage");
+  const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !strongPassword.test(password) || !accepted) {
+    message.textContent = "Vui lòng nhập tên, email hợp lệ, mật khẩu đủ điều kiện và đồng ý điều khoản.";
+    message.className = "message error";
+    return;
+  }
+  try {
+    // Chỉ lưu thông tin không nhạy cảm; không lưu password.
+    localStorage.setItem("registeredUser", JSON.stringify({name, email}));
+    message.textContent = "Đăng ký thành công! Thông tin cơ bản đã được lưu trên trình duyệt.";
+    message.className = "message success";
+    registerForm.reset();
+  } catch (error) {
+    message.textContent = "Không thể lưu dữ liệu. Trình duyệt có thể đang chặn LocalStorage.";
+    message.className = "message error";
+  }
+});
+
+// Bài 3: Dùng timestamp để hạn chế sai lệch do độ trễ của setInterval.
+const timerDisplay = document.getElementById("timer");
+const modal = document.getElementById("timeModal");
+const DURATION = 10 * 60 * 1000;
+let remainingMs = DURATION;
+let deadline = 0;
+let intervalId = null;
+
+function formatTime(ms) {
+  const totalSeconds = Math.ceil(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+}
+function updateTimer() {
+  remainingMs = Math.max(0, deadline - Date.now());
+  timerDisplay.textContent = formatTime(remainingMs);
+  timerDisplay.classList.toggle("warning", remainingMs > 0 && remainingMs < 60000);
+  if (remainingMs <= 0) {
+    clearInterval(intervalId);
+    intervalId = null;
+    modal.style.display = "flex";
+  }
+}
+function startTimer() {
+  if (intervalId !== null || remainingMs <= 0) return;
+  deadline = Date.now() + remainingMs;
+  updateTimer();
+  intervalId = setInterval(updateTimer, 250);
+}
+function pauseTimer() {
+  if (intervalId === null) return;
+  remainingMs = Math.max(0, deadline - Date.now());
+  clearInterval(intervalId);
+  intervalId = null;
+  updateTimer();
+}
+function resetTimer() {
+  clearInterval(intervalId);
+  intervalId = null;
+  remainingMs = DURATION;
+  timerDisplay.textContent = formatTime(remainingMs);
+  timerDisplay.classList.remove("warning");
+  modal.style.display = "none";
+}
+document.getElementById("startTimer").addEventListener("click", startTimer);
+document.getElementById("pauseTimer").addEventListener("click", pauseTimer);
+document.getElementById("resetTimer").addEventListener("click", resetTimer);
+document.getElementById("closeModal").addEventListener("click", () => modal.style.display = "none");
+</script>
+</body>
+</html>

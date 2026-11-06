@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trả lời lý thuyết</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:16px/1.7 Arial,sans-serif;background:#f4f7fb;color:#253247}
+header{background:#173b68;color:white;text-align:center;padding:25px 15px}nav{background:#102b4d;padding:13px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap}nav a{color:white;text-decoration:none;font-weight:bold}
+main{max-width:1000px;margin:25px auto;padding:0 16px}.answer{background:white;padding:22px;margin:18px 0;border-radius:10px;box-shadow:0 2px 12px #0000000b}
+h2{color:#174b80}pre{background:#f0f4f8;padding:13px;border-radius:7px;overflow:auto;white-space:pre-wrap}
+footer{text-align:center;padding:20px;color:#667}
+</style></head>
+<body>
+<header><h1>PHẦN 1 – TRẢ LỜI LÝ THUYẾT</h1><p>HTML, CSS, JavaScript, Domain và Hosting</p></header>
+<nav><a href="index.html">Trang chủ</a><a href="ly-thuyet.html">Trả lời lý thuyết</a><a href="diem-danh.html">Thông tin điểm danh</a></nav>
+<main>
+<article class="answer">
+<h2>Câu 1. Phân biệt position: relative và position: absolute</h2>
+<p><b>position: relative</b> định vị phần tử tương đối so với vị trí ban đầu của chính nó. Phần tử vẫn giữ chỗ trong luồng bố cục. Ví dụ: dịch nhẹ nhãn “Mới” trên thẻ sản phẩm mà không làm các phần tử khác xê dịch.</p>
+<p><b>position: absolute</b> đưa phần tử ra khỏi luồng bố cục và định vị theo phần tử tổ tiên gần nhất có position khác static; nếu không có thì theo khung chứa ban đầu của trang. Ví dụ: đặt biểu tượng đóng ở góc trên bên phải của hộp thông báo.</p>
+<pre> .card { position: relative; }
+.badge { position: absolute; top: 8px; right: 8px; }
+.title { position: relative; top: 4px; }</pre>
+<p>Khi làm responsive, nên dùng Grid/Flexbox cho bố cục chính, hạn chế tọa độ cố định và dùng media query. Hai thuộc tính này không phụ thuộc trực tiếp vào hosting; tuy nhiên website triển khai vẫn cần CSS đúng, đường dẫn tài nguyên chính xác và kiểm tra trên nhiều kích thước màn hình, trình duyệt.</p>
+</article>
+<article class="answer">
+<h2>Câu 2. Đăng ký domain, cấu hình hosting và vai trò DNS</h2>
+<p>Quy trình cơ bản: (1) Chọn tên miền, kiểm tra còn khả dụng và đăng ký qua nhà đăng ký tên miền. (2) Tạo repository Git và đưa mã nguồn website lên. (3) Chọn dịch vụ hosting tĩnh như GitHub Pages hoặc Netlify, kết nối repository và cấu hình thư mục build nếu cần. (4) Thêm tên miền tùy chỉnh trong hosting. (5) Cập nhật bản ghi DNS theo hướng dẫn của nhà cung cấp, chờ DNS cập nhật và bật HTTPS.</p>
+<p><b>DNS</b> chuyển tên miền dễ nhớ thành địa chỉ máy chủ. Bản ghi A/AAAA thường trỏ tới địa chỉ IP; CNAME trỏ một tên máy chủ khác. GitHub Pages phù hợp website tĩnh lưu trong GitHub; Netlify hỗ trợ deploy từ Git và tự động cập nhật khi có commit.</p>
+<p>Rủi ro khi cấu hình sai gồm trỏ nhầm máy chủ, lộ thông tin bí mật trong mã nguồn, dùng HTTP không mã hóa, phân quyền repository không phù hợp và bỏ quên cập nhật thư viện có lỗ hổng. Không đưa API key hoặc mật khẩu vào JavaScript phía trình duyệt; bật HTTPS và chỉ công khai dữ liệu cần thiết.</p>
+</article>
+<article class="answer">
+<h2>Câu 3. So sánh var, let và const; hoisting và debug</h2>
+<p><b>var</b> có function scope, cho phép khai báo lại và được hoisting với giá trị ban đầu là undefined. <b>let</b> và <b>const</b> có block scope; được hoisting nhưng nằm trong temporal dead zone cho đến dòng khai báo nên truy cập trước khai báo gây lỗi. <b>let</b> có thể gán lại; <b>const</b> không thể gán lại biến (nhưng thuộc tính object vẫn có thể thay đổi).</p>
+<pre>console.log(a); // undefined
+var a = 10;
+
+console.log(b); // ReferenceError
+let b = 20;
+
+const count = 1;
+// count = 2; // TypeError</pre>
+<p>Lỗi thường gặp là dùng biến trước khi khai báo bằng let/const hoặc vô tình dùng var trong vòng lặp khiến các lần lặp chia sẻ cùng biến. Nên ưu tiên const, dùng let khi cần gán lại và hạn chế var.</p>
+<p>Để debug bằng Chrome DevTools: mở F12 → Sources, đặt breakpoint tại dòng nghi ngờ, tải lại trang và quan sát từng bước bằng Step over/Step into. Tab Console hiển thị lỗi và stack trace; có thể kiểm tra giá trị biến, scope và điều kiện tại thời điểm lỗi.</p>
+</article>
+<article class="answer">
+<h2>Câu 4. Event Delegation</h2>
+<p>Event Delegation là kỹ thuật gắn một listener lên phần tử cha thay vì gắn riêng lên từng phần tử con. Khi sự kiện nổi bọt (bubbling) lên cha, dùng event.target hoặc closest() để xác định phần tử phát sinh sự kiện.</p>
+<pre>document.querySelector("#list").addEventListener("click", event => {
+  const item = event.target.closest("li");
+  if (!item || !event.currentTarget.contains(item)) return;
+  console.log("Bạn chọn:", item.textContent);
+});</pre>
+<p>Kỹ thuật này đặc biệt hữu ích với danh sách động vì phần tử được thêm sau vẫn được xử lý mà không cần đăng ký listener mới. Nó giảm số lượng listener, tiết kiệm bộ nhớ và đơn giản hóa quản lý sự kiện. HTML cung cấp cấu trúc cha-con, CSS tạo trạng thái hover/active, còn JavaScript xử lý hành động. Cần kiểm tra đúng mục tiêu sự kiện để tránh xử lý nhầm phần tử.</p>
+</article>
+</main><footer>Trang trả lời lý thuyết – Đề thi kết thúc học phần</footer></body></html>
